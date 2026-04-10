@@ -1,0 +1,38 @@
+use core::panic;
+
+use clap::Parser;
+use aoc2019::{self, day1, reader};
+/// Simple program to greet a person
+#[derive(Parser, Debug)]
+#[command(version, about, long_about = None)]
+struct Args {
+    /// no. of day
+    #[arg(short, long)]
+    day: usize,
+
+    /// which file to read from; its optional or just pipe the stdin without the cli args; pretty simnple
+    #[arg(short, long)]
+    input: Option<String>,
+} 
+fn main() {
+    let args = Args::parse(); 
+    let mut r = match args.input { 
+        Some(path) => {
+            let file = std::fs::File::open(path).unwrap();
+            let reader = std::io::BufReader::new(file); 
+            reader::Reader::File(reader)
+        },
+        None => { 
+            let stdin = std::io::stdin();
+            let guard = stdin.lock();
+            let reader = std::io::BufReader::new(guard);
+            reader::Reader::Stdin(reader)
+        }
+    };
+    let day = args.day;
+    match day { 
+        1 => day1::run(&mut r),
+        n if n > 1 && n < 26 => panic!("unimplemented for day {}", day),
+        _ => panic!("invalid day {} , out of scope", day)
+    }
+}
