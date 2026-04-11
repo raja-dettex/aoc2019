@@ -1,6 +1,56 @@
 pub mod day1;
 
 
+#[macro_use]
+pub mod macros { 
+
+    #[macro_export]
+    macro_rules! error {
+        ($($arg:tt)*) => ($crate::Error::Custom(format!("{}", format_args!($($arg)*))))
+    }
+
+    #[macro_export]
+    macro_rules! bail {
+        ($($arg:tt)*) =>{ 
+            return Err($crate::error::Error::Custom(format!("{}", format_args!($($arg)*))))
+        }
+    }
+}
+
+pub mod error {
+    use core::fmt;
+    use std::num::ParseIntError;
+ 
+ 
+    #[derive(Debug)]
+    pub enum Error { 
+        Custom(String),
+        Io(std::io::Error),
+        ParseInt(ParseIntError)
+    }
+
+    impl From<std::io::Error> for Error {
+        fn from(error: std::io::Error) -> Self {
+            Self::Io(error)
+        }
+    }
+    
+    impl From<ParseIntError> for Error {
+        fn from(error: ParseIntError) -> Self {
+            Self::ParseInt(error)
+        }
+    }
+    impl fmt::Display for Error {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            match self { 
+                Self::Custom(s) => write!(f, "{}", s),
+                Self::Io(err) => write!(f, "{}", err),
+                Self::ParseInt(err) => write!(f, "{}", err)
+            }
+        }
+    }
+    impl std::error::Error for Error {}
+}
 pub mod reader {
     use std::io::{BufRead, Read, StdinLock};
  

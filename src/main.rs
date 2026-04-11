@@ -1,7 +1,5 @@
-use core::panic;
-
 use clap::Parser;
-use aoc2019::{self, day1, reader};
+use aoc2019::{self, bail, day1, error, reader};
 /// Simple program to greet a person
 #[derive(Parser, Debug)]
 #[command(version, about, long_about = None)]
@@ -14,7 +12,12 @@ struct Args {
     #[arg(short, long)]
     input: Option<String>,
 } 
-fn main() {
+fn main() { 
+    if let Err(e) = run() { 
+        println!("{}", e);
+    }
+}
+fn run() -> std::result::Result<(), error::Error>{
     let args = Args::parse(); 
     let mut r = match args.input { 
         Some(path) => {
@@ -31,8 +34,9 @@ fn main() {
     };
     let day = args.day;
     match day { 
-        1 => day1::run(&mut r),
-        n if n > 1 && n < 26 => panic!("unimplemented for day {}", day),
-        _ => panic!("invalid day {} , out of scope", day)
+        1 => day1::run(&mut r)?,
+        n if n > 1 && n < 26 => bail!("day {} is not implemented yet ", day),
+        _ => bail!("day must be between 1 and 26")
     }
+    Ok(())
 }
