@@ -1,5 +1,5 @@
 use clap::Parser;
-use aoc2019::{self, bail, day1, day2, day3, error, reader};
+use aoc2019::{self, bail, day1, day2, day3, day4, error, reader};
 /// Simple program to greet a person
 #[derive(Parser, Debug)]
 #[command(version, about, long_about = None)]
@@ -36,7 +36,9 @@ fn run() -> std::result::Result<(), error::Error>{
     match day { 
         1 => day1::run(&mut r)?,
         2 => day2::run(&mut r)?,
-        3 => day3::run(&mut r)?,
+        3 => day3::run(&mut r)?,        
+        4 => day4::run(&mut r)?,
+
         n if n > 1 && n < 26 => bail!("day {} is not implemented yet ", day),
         _ => bail!("day must be between 1 and 26")
     }
