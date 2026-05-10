@@ -5,13 +5,15 @@ where R: std::io::BufRead {
     let (low, high) = read_input(input)?;
     println!("low {} and high {}", low, high);
     println!("{:?}", parse_digits(low as i32));
-    let mut answer = 0;
+    let mut answer1 = 0;
+    let mut answer2 = 0;
     'outer: for n in low..=high { 
         let digits = parse_digits(n as i32);
         let mut state = State::None;
         let mut min = 0;
-        let mut is_valid = false;
-        for digit in digits { 
+        let mut is_valid = (false, false);
+        for (i, digit) in digits.iter().enumerate() { 
+            let digit = *digit;
             if digit < min { 
                 continue 'outer;
             }
@@ -19,28 +21,44 @@ where R: std::io::BufRead {
                 State::None => state = State::One(digit),
                 State::One(d) => { 
                     if d == digit { 
-                        is_valid = true;
+                        is_valid.0 = true;
+                        if i == 5 { is_valid.1 = true; }
                         state = State::Two(digit)
                     } else { 
                         state = State::One(digit)
                     }
                 },
-                State::Two(_) => {},
+                State::Two(d)  => {
+                    if d == digit { 
+                        state = State::Three_Or_More(digit);
+                    } else { 
+                        is_valid.1 = true;
+                        state = State::One(digit);
+                    }
+                },
+                State::Three_Or_More(d) => { 
+                    if d == digit  { 
+                    } else { 
+                        state = State::One(digit);
+                    }
+                }
             }
             min = digit;
         }
         
         
-        if is_valid { answer += 1; }
+        if is_valid.0 { answer1 += 1; }
+        if is_valid.1 { answer2 += 1; }
     }
-    println!("{}", answer);
+    println!("{}, {}", answer1, answer2);
     Ok(())
 }
 
 enum State { 
     None,
     One(u8),
-    Two(u8)
+    Two(u8),
+    Three_Or_More(u8)
 }
 fn parse_digits(n: i32) -> [u8; 6] {
     let mut out = [0u8; 6];
