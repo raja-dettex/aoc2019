@@ -2,6 +2,7 @@ pub mod day1;
 pub mod day2;
 pub mod day3;
 pub mod day4;
+mod emulator;
 #[macro_use]
 pub mod macros { 
 
